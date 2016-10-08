@@ -1,0 +1,39 @@
+<?php
+
+$path = base64_decode($_REQUEST['path']);
+	$filepath = $path;
+	
+	$arrpath = explode("/",$path);
+	$filename = $arrpath[count($arrpath)-1];
+	$filename=rawurldecode($filename);
+	$filename=iconv("UTF-8","gb2312",$filename);
+
+	$fp=fopen($filepath,"rb");
+	$file_size=filesize($filepath); 
+	//下载文件需要用到的
+	if(strpos($filepath,".css")!==false)
+	{
+		Header("Content-type: text/css");
+	}
+	else if(strpos($filepath,".js")!==false)
+	{
+		Header("Content-type: application/x-javascript");
+	}
+	else 
+	{
+		Header("Content-type: application/octet-stream");
+	}	 
+	Header("Accept-Ranges: bytes"); 
+	Header("Accept-Length:".$file_size); 
+	Header("Content-Disposition: attachment; filename=".$filename); 
+	$buffer=1024; 
+	$file_count=0; 
+	//向浏览器返回数据 
+	while(!feof($fp) && $file_count<$file_size){ 
+	$file_con=fread($fp,$buffer); 
+	$file_count+=$buffer; 
+	echo $file_con; 
+	} 
+	fclose($fp); 
+	
+?>
